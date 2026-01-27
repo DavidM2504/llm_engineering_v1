@@ -1,0 +1,46 @@
+# Core Python utilities
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+tqdm>=4.66.0
+requests>=2.31.0
+
+# Jupyter & notebooks
+jupyterlab>=4.0.0
+ipykernel>=6.29.0
+
+# LLM APIs
+openai>=1.6.0
+anthropic>=0.18.0
+google-generativeai>=0.3.0
+
+# Hugging Face ecosystem
+transformers>=4.38.0
+datasets>=2.17.0
+accelerate>=0.27.0
+peft>=0.10.0
+bitsandbytes>=0.42.0
+huggingface-hub>=0.20.0
+
+# RAG & vector databases
+langchain>=0.1.10
+langchain-community>=0.0.28
+langchain-openai>=0.0.6
+faiss-cpu>=1.7.4
+chromadb>=0.4.22
+
+# Embeddings & NLP
+sentence-transformers>=2.4.0
+tiktoken>=0.6.0
+
+# Agents & tools
+gradio>=4.19.0
+duckduckgo-search>=4.4.0
+
+# Evaluation & experimentation
+evaluate>=0.4.1
+scikit-learn>=1.4.0
+numpy>=1.26.0
+pandas>=2.2.0
+
+# Visualization (optional but useful)
+matplotlib>=3.8.0
