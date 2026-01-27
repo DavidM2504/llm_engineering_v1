@@ -13,23 +13,22 @@ from openai import OpenAI
 
 
 load_dotenv(override=True)
-api_key = os.getenv('OPENAI_API_KEY')
+google_api_key = os.getenv("GOOGLE_API_KEY")
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 # Check the key
 
-if not api_key:
+
+if not google_api_key:
     print("No API key was found - please head over to the troubleshooting notebook in this folder to identify & fix!")
-elif not api_key.startswith("sk-proj-"):
-    print("An API key was found, but it doesn't start sk-proj-; please check you're using the right key - see troubleshooting notebook")
-elif api_key.strip() != api_key:
-    print("An API key was found, but it looks like it might have space or tab characters at the start or end - please remove them - see troubleshooting notebook")
+elif not google_api_key.startswith("AIz"):
+    print("An API key was found, but it doesn't start AIz")
 else:
     print("API key found and looks good so far!")
 
-
 # Create OpenAI client
 openai = OpenAI()
-
+gemini = OpenAI(base_url=GEMINI_BASE_URL, api_key=google_api_key)
 # Define our system prompt - you can experiment with this later, changing the last sentence to 'Respond in markdown in Spanish."
 
 system_prompt = """
@@ -58,8 +57,8 @@ def messages_for(website):
 # Summarize a website
 def summarize(url):
     website = fetch_website_contents(url)
-    response = openai.chat.completions.create(
-        model = "gpt-4.1-mini",
+    response = gemini.chat.completions.create(
+        model = "gemini-2.5-pro",
         messages = messages_for(website)
     )
     return response.choices[0].message.content
@@ -73,7 +72,7 @@ def display_summary(url):
 
 
 if __name__ == "__main__":
-    url = input("Enter the url of the website to summarze: ").strip()
+    url = input("Enter the url of the website to summarize: ").strip()
     if not url:
         print("No URL entered. Exiting.")
     else:
