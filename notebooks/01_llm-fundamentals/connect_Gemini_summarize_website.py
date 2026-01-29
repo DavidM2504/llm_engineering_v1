@@ -58,7 +58,7 @@ def messages_for(website):
 def summarize(url):
     website = fetch_website_contents(url)
     response = gemini.chat.completions.create(
-        model = "gemini-2.5-pro",
+        model = "gemini-2.5-flash",
         messages = messages_for(website)
     )
     return response.choices[0].message.content
