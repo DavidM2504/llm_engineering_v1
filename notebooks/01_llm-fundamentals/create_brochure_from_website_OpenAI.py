@@ -21,6 +21,8 @@ else:
 MODEL = 'gpt-5-nano'
 openai = OpenAI()
 
+# create a system prompt to get the relevant links a list with links on the website
+
 link_system_prompt = """
 You are provided with a list of links found on a webpage.
 You are able to decide which of the links would be most relevant to include in a brochure about the company,
@@ -34,6 +36,7 @@ You should respond in JSON as in this example:
     ]
 }
 """
+# # create a user prompt to get the relevant links a list with links on the website
 
 def get_links_user_prompt(url):
     user_prompt = f"""
@@ -49,6 +52,7 @@ Links (some might be relative links):
     user_prompt += "\n".join(links)
     return user_prompt
 
+#function to retrieve the relevant links
 
 def select_relevant_links(url):
     response = openai.chat.completions.create(
@@ -63,6 +67,8 @@ def select_relevant_links(url):
     links = json.loads(result)
     return links
 
+# function to get the relevant info and relevant links from the website.
+
 def fetch_page_and_all_relevant_links(url):
     contents = fetch_website_contents(url)
     relevant_links = select_relevant_links(url)
@@ -72,6 +78,8 @@ def fetch_page_and_all_relevant_links(url):
         result += fetch_website_contents(link["url"])
     return result
 
+# create brochure system prompt
+
 brochure_system_prompt = """
 You are an assistant that analyzes the contents of several relevant pages from a company website
 and creates a short brochure about the company for prospective customers, investors and recruits.
@@ -79,14 +87,7 @@ Respond in markdown without code blocks.
 Include details of company culture, customers and careers/jobs if you have the information.
 """
 
-# Or uncomment the lines below for a more humorous brochure - this demonstrates how easy it is to incorporate 'tone':
-
-brochure_system_prompt = """
-You are an assistant that analyzes the contents of several relevant pages from a company website
-and creates a short, humorous, entertaining, witty brochure about the company for prospective customers, investors and recruits.
-Respond in markdown without code blocks.
-Include details of company culture, customers and careers/jobs if you have the information.
- """
+# create Brochure user prompt
 
 def get_brochure_user_prompt(company_name, url):
     user_prompt = f"""
@@ -98,6 +99,8 @@ use this information to build a short brochure of the company in markdown withou
     user_prompt = user_prompt[:5_000] # Truncate if more than 5,000 characters
     return user_prompt
 
+# function to make the LLM call to create the brochure 
+
 def create_brochure(company_name, url):
     response = openai.chat.completions.create(
         model=MODEL,
@@ -108,6 +111,8 @@ def create_brochure(company_name, url):
     )
     result = response.choices[0].message.content
     display(Markdown(result))
+
+# upgraded function to create the Brochure. The result will be streaming
 
 def stream_brochure(company_name, url):
     stream = openai.chat.completions.create(
@@ -135,6 +140,7 @@ def stream_brochure(company_name, url):
             # Fallback for non-Jupyter environments
             print(delta, end="", flush=True)
 
+# run the program
 
 if __name__ == "__main__":
     company_name = input("Enter the company you like the brochure for: ").strip()
