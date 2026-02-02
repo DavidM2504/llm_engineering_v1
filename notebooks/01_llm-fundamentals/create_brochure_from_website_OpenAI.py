@@ -123,26 +123,78 @@ def stream_brochure(company_name, url):
           ],
         stream=True
     )    
-    response = ""
+    brochure_text = ""
+    display_handle = display(Markdown(""), display_id=True)
+    for chunk in stream:
+        # response += chunk.choices[0].delta.content or ''
+        # update_display(Markdown(response), display_id=display_handle.display_id)
+        brochure_text += chunk.choices[0].delta.content or ""
+       
+
+        if display_handle is not None:
+            update_display(
+                Markdown(brochure_text),
+                display_id=display_handle.display_id
+            )
+        else:
+            print(brochure_text, end="", flush=True)
+    print()
+    return brochure_text
+
+
+# create brochure system prompt
+
+brochure_translate_system_prompt = """
+You are an assistant that receives a brochure of a company and you translate it into the language provided.
+"""
+
+# create Brochure user prompt
+
+def get_brochure_translate_user_prompt (brochure_text, language):
+    user_prompt= f"""
+The brochure is in Markdwon format and you will translate it into the language provided.
+The language is: {language}
+The brochure is: {brochure_text}
+"""
+
+    return user_prompt
+
+
+def translate_brochure(source_text, language):
+    stream = openai.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": brochure_translate_system_prompt},
+            {"role": "user", "content": get_brochure_translate_user_prompt(source_text, language)}
+          ],
+        stream=True
+    )    
+    translated_text = ""
     display_handle = display(Markdown(""), display_id=True)
     for chunk in stream:
         # response += chunk.choices[0].delta.content or ''
         # update_display(Markdown(response), display_id=display_handle.display_id)
         delta = chunk.choices[0].delta.content or ""
-        response += delta
+        translated_text += delta
 
         if display_handle is not None:
             update_display(
-                Markdown(response),
+                Markdown(translated_text),
                 display_id=display_handle.display_id
             )
         else:
-            # Fallback for non-Jupyter environments
             print(delta, end="", flush=True)
+    print()       
+    return translated_text
 
 # run the program
 
 if __name__ == "__main__":
     company_name = input("Enter the company you like the brochure for: ").strip()
     url = input("Enter the url of the website to summarize: ").strip()
-    stream_brochure(company_name, url)
+    brochure_text = stream_brochure(company_name, url)
+    
+    translate = input("\nTranslate brochure? (y/n): ").strip().lower()
+    if translate in {"y", "yes"}:
+        language = input("Translate to which language?: ").strip()
+        translate_brochure(brochure_text, language)
